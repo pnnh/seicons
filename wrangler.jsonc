@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "seicons",
+  "compatibility_date": "2026-04-20",
+  "main": ".open-next/worker.js",
+  // adapter 输出的入口
+  "observability": {
+    "enabled": true
+  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "seicons",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 7611 --turbo",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "adapter": "next build && opennextjs-cloudflare build",
+    "preview": "opennextjs-cloudflare preview",
+    "generate:icons": "node scripts/generate-icons-manifest.mjs",
+    "prebuild": "pnpm run generate:icons"
+  },
+  "dependencies": {
+    "@opennextjs/cloudflare": "^1.18.0",
+    "accept-language": "^3.0.20",
+    "next": "16.2.4",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-icons": "^5.6.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.4",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "wrangler": "^4.81.0"
+  },
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
+}
