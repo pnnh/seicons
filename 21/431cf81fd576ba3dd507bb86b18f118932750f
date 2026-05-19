@@ -1,0 +1,103 @@
+src/locales/ja.json
+  s_488027ba2a8161::t_2a3880d49d0792 16-20
+  s_488027ba2a8161::t_42802cfb37fe88 21-29
+  s_488027ba2a8161::t_0900677f29b7cc 3-15,30
+src/app/[lang]/page.tsx
+  h_6465a203f88bd5 22
+  s_488027ba2a8161::t_0900677f29b7cc 6,23
+src/components/IconBrowser.tsx
+  s_488027ba2a8161::t_313565c3bc288c 1-16,19-25,29-37,40-43,49-55,60-81,84,105-154,242-254
+  s_488027ba2a8161::t_9b4aa8478fb6b8 17-18,26-28,38-39,44-48,56-59,82-83,85-104,155-241
+src/locales/es.json
+  s_488027ba2a8161::t_2a3880d49d0792 16-20
+  s_488027ba2a8161::t_0900677f29b7cc 3-15,30
+  s_488027ba2a8161::t_42802cfb37fe88 21-29
+src/locales/fr.json
+  s_488027ba2a8161::t_0900677f29b7cc 3-15,30
+  s_488027ba2a8161::t_2a3880d49d0792 16-20
+  s_488027ba2a8161::t_42802cfb37fe88 21-29
+src/locales/pt-PT.json
+  s_488027ba2a8161::t_2a3880d49d0792 16-20
+  s_488027ba2a8161::t_42802cfb37fe88 21-29
+  s_488027ba2a8161::t_0900677f29b7cc 3-15,30
+package.json
+  s_488027ba2a8161::t_ccc1b11476bae4 11-13,35
+  s_488027ba2a8161::t_fcc564231b473f 16-21
+  h_6465a203f88bd5 6
+scripts/generate-icons-manifest.mjs
+  s_488027ba2a8161::t_fabefc3936c7d7 1-40
+src/locales/zh.json
+  s_488027ba2a8161::t_0900677f29b7cc 3-15,30
+  s_488027ba2a8161::t_2a3880d49d0792 16-18,20
+  s_488027ba2a8161::t_c17272df67cb86 19
+  s_488027ba2a8161::t_42802cfb37fe88 21-29
+src/lib/icons.ts
+  s_488027ba2a8161::t_fabefc3936c7d7 1-31
+src/components/LanguageSelector.tsx
+  s_488027ba2a8161::t_5b0edeecd21e21 1-2,6-41
+  s_488027ba2a8161::t_fc06f3d1f295a7 3
+src/lib/icon-loaders.ts
+  s_488027ba2a8161::t_bd24c398dfea3d 3,44
+  s_488027ba2a8161::t_5b0edeecd21e21 1-2,4-43,45
+src/lib/icon-export.ts
+  s_488027ba2a8161::t_13d0582e3db170 1-6,9-12,37,41-42,49-51,57,62-63,75-79,81-88,90-91,97-100,103-130
+  s_488027ba2a8161::t_3d387c7b6fe1db 7-8,13-36,38-40,43,47-48,52-56,58-61,64-74,80,89,92-96,101-102
+src/app/[lang]/icons/[pkg]/[name]/page.tsx
+  s_488027ba2a8161::t_eb17e84fed8028 1-58
+src/locales/de-DE.json
+  s_488027ba2a8161::t_2a3880d49d0792 16-20
+  s_488027ba2a8161::t_0900677f29b7cc 3-15,30
+  s_488027ba2a8161::t_42802cfb37fe88 21-29
+src/components/IconDetailPanel.tsx
+  s_488027ba2a8161::t_eb17e84fed8028 1-136
+src/components/DynamicIcon.tsx
+  s_488027ba2a8161::t_5b0edeecd21e21 5,26-28,36-37,40-42
+  s_488027ba2a8161::t_7e5d03cf0e3e02 10,14-19,38-39,45
+  s_488027ba2a8161::t_fabefc3936c7d7 1-4,6-9,11-13,20-25,29-35,43-44,46
+src/lib/icon-path.ts
+  s_488027ba2a8161::t_13d0582e3db170 1-11
+src/components/IconCard.tsx
+  s_488027ba2a8161::t_fabefc3936c7d7 1-2,5-6,9,11-17,19,21,28-33,55-56
+  s_488027ba2a8161::t_7e5d03cf0e3e02 3-4,7-8,10,18,20,22-27,34-54
+src/components/IconPreview.tsx
+  s_488027ba2a8161::t_7e5d03cf0e3e02 1-27
+src/locales/zh-TW.json
+  s_488027ba2a8161::t_42802cfb37fe88 21-29
+  s_488027ba2a8161::t_0900677f29b7cc 3-15,30
+  s_488027ba2a8161::t_2a3880d49d0792 16-18,20
+  s_488027ba2a8161::t_c17272df67cb86 19
+src/data/icons-manifest.json
+  s_488027ba2a8161::t_ade0503151bae7 1
+src/components/SiteFooter.tsx
+  s_488027ba2a8161::t_ccc1b11476bae4 9-21
+src/lib/icon-svg.ts
+  s_488027ba2a8161::t_13d0582e3db170 1-24
+src/locales/en.json
+  s_488027ba2a8161::t_0900677f29b7cc 3-15,30
+  s_488027ba2a8161::t_42802cfb37fe88 21-29
+  s_488027ba2a8161::t_2a3880d49d0792 16-20
+src/components/SiteHeader.tsx
+  s_488027ba2a8161::t_5b0edeecd21e21 2
+  s_488027ba2a8161::t_eb17e84fed8028 7-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.10",
+  "base_commit_sha": "21431cf81fd576ba3dd507bb86b18f118932750f",
+  "prompts": {},
+  "humans": {
+    "h_6465a203f88bd5": {
+      "author": "larry <xspanni@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_488027ba2a8161": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "3653a4eb-df04-4edf-9bb4-8d44a0b8e92d",
+        "model": "composer-2.5"
+      },
+      "human_author": "larry <xspanni@gmail.com>"
+    }
+  }
+}
