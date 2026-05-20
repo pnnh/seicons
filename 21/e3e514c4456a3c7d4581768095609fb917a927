@@ -1,0 +1,65 @@
+src/locales/de-DE.json
+  s_488027ba2a8161::t_0ae8a5fb874f37 48-49
+  s_488027ba2a8161::t_e10d3db909c314 41-47
+src/locales/ja.json
+  s_488027ba2a8161::t_0ae8a5fb874f37 48-49
+  s_488027ba2a8161::t_e10d3db909c314 41-47
+src/lib/icons.ts
+  s_488027ba2a8161::t_d4e4e21a4ca316 15-21
+  s_488027ba2a8161::t_0ae8a5fb874f37 22
+src/locales/pt-PT.json
+  s_488027ba2a8161::t_0ae8a5fb874f37 48-49
+  s_488027ba2a8161::t_e10d3db909c314 41-47
+src/locales/zh-TW.json
+  s_488027ba2a8161::t_0ae8a5fb874f37 48-49
+  s_488027ba2a8161::t_e10d3db909c314 41-47
+src/locales/zh.json
+  s_488027ba2a8161::t_0ae8a5fb874f37 48-49
+  s_488027ba2a8161::t_e10d3db909c314 3-4,6,41-47
+src/components/IconCard.tsx
+  s_488027ba2a8161::t_e10d3db909c314 7,18-21,50
+src/lib/icon-import.ts
+  s_488027ba2a8161::t_0ae8a5fb874f37 33-34
+  s_488027ba2a8161::t_d4e4e21a4ca316 1-32,35-38
+src/components/IconDetailPanel.tsx
+  s_488027ba2a8161::t_e10d3db909c314 3,17,39
+src/locales/en.json
+  s_488027ba2a8161::t_e10d3db909c314 3-4,6,41-47
+  s_488027ba2a8161::t_0ae8a5fb874f37 48-49
+src/lib/icon-export.ts
+  s_488027ba2a8161::t_630cd5d6a8853d 51,53-62
+src/locales/fr.json
+  s_488027ba2a8161::t_0ae8a5fb874f37 48-49
+  s_488027ba2a8161::t_e10d3db909c314 41-47
+src/locales/es.json
+  s_488027ba2a8161::t_0ae8a5fb874f37 48-49
+  s_488027ba2a8161::t_e10d3db909c314 41-47
+package.json
+  s_488027ba2a8161::t_df2e53f0438e50 39
+  s_488027ba2a8161::t_878c29b6755a95 16-29,37-38,42
+scripts/generate-icons-db.mjs
+  s_488027ba2a8161::t_25e2e06361b193 79-86,228,256,270,284,298,400,426,440,451,462
+  s_488027ba2a8161::t_3a2431885c13de 377-378
+  s_488027ba2a8161::t_64fefd8d2d3ff3 130,147,149-151,167-178,180,187-188,190,662-668,670-671,673-680
+  s_488027ba2a8161::t_e9c95db7fb4974 646-650,657-660,684
+  s_488027ba2a8161::t_0ae8a5fb874f37 24,36-37,87-106,108,122-125,128-129,189,191-192,357,516-546,553,556-582,593,605,618
+  s_488027ba2a8161::t_ba94fc144b33d2 17-23,25-35,38,61-75,203-207,252-255,257-269,271-283,285-297,299-356,358-376,379-383,421-425,427-439,441-450,452-461,463-515,554-555,583,586-592,594-604,606,608-617
+  s_488027ba2a8161::t_1b9b11e623bcaf 131-146,148,152-166,179,181-186,672
+  s_488027ba2a8161::t_dea57b48b39922 107,109-121,126-127
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "21e3e514c4456a3c7d4581768095609fb917a927",
+  "prompts": {},
+  "sessions": {
+    "s_488027ba2a8161": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "3653a4eb-df04-4edf-9bb4-8d44a0b8e92d",
+        "model": "composer-2.5"
+      },
+      "human_author": "larry <xspanni@gmail.com>"
+    }
+  }
+}
