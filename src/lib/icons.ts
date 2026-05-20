@@ -3,6 +3,7 @@ export type IconEntry = {
   p: string;
   n: string;
   s: string;
+  svg: string;
 };
 
 export const ICON_PAGE_SIZE = 48;

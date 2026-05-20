@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { LangKey } from "@/lib/language";
 import { t } from "@/lib/i18n";
@@ -12,7 +12,7 @@ import {
 } from "@/lib/icons";
 import IconCard from "@/components/IconCard";
 
-type Props = { lang: LangKey };
+type Props = { lang: LangKey; initialData?: IconsQueryResult };
 
 const PAGE_JUMP_SIZE = 5;
 
@@ -29,7 +29,7 @@ const btnClass =
 const selectClass =
   "rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-8 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer min-w-[9rem]";
 
-function IconBrowserInner({ lang }: Props) {
+function IconBrowserInner({ lang, initialData }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -42,8 +42,10 @@ function IconBrowserInner({ lang }: Props) {
   const [inputValue, setInputValue] = useState(queryParam);
   const [pageInput, setPageInput] = useState(String(pageParam));
   const [pageError, setPageError] = useState(false);
-  const [data, setData] = useState<IconsQueryResult | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<IconsQueryResult | null>(initialData ?? null);
+  const [loading, setLoading] = useState(!initialData);
+  const fetchSeq = useRef(0);
+  const skipLoadingOnce = useRef(!!initialData);
 
   useEffect(() => {
     setInputValue(queryParam);
@@ -83,8 +85,12 @@ function IconBrowserInner({ lang }: Props) {
   }, [inputValue, queryParam, updateParams]);
 
   useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
+    const seq = ++fetchSeq.current;
+    if (skipLoadingOnce.current) {
+      skipLoadingOnce.current = false;
+    } else {
+      setLoading(true);
+    }
 
     const params = new URLSearchParams();
     if (queryParam) params.set("q", queryParam);
@@ -95,18 +101,16 @@ function IconBrowserInner({ lang }: Props) {
     fetch(`/api/icons?${params}`)
       .then((res) => res.json())
       .then((json: IconsQueryResult) => {
-        if (!cancelled) setData(json);
+        if (fetchSeq.current === seq) setData(json);
       })
       .catch(() => {
-        if (!cancelled) setData({ items: [], page: 1, totalPages: 1, total: 0 });
+        if (fetchSeq.current === seq) {
+          setData({ items: [], page: 1, totalPages: 1, total: 0 });
+        }
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (fetchSeq.current === seq) setLoading(false);
       });
-
-    return () => {
-      cancelled = true;
-    };
   }, [queryParam, pageParam, libParam, styleParam]);
 
   const items: IconEntry[] = data?.items ?? [];
@@ -315,10 +319,10 @@ function IconBrowserInner({ lang }: Props) {
   );
 }
 
-export default function IconBrowser(props: Props) {
+export default function IconBrowser({ initialData, ...props }: Props) {
   return (
     <Suspense fallback={<p className="text-center text-gray-500 py-16">…</p>}>
-      <IconBrowserInner {...props} />
+      <IconBrowserInner {...props} initialData={initialData} />
     </Suspense>
   );
 }

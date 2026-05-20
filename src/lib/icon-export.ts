@@ -4,6 +4,21 @@ export type IconSize = (typeof ICON_SIZES)[number];
 export const ICON_FORMATS = ["svg", "png", "jpg", "webp"] as const;
 export type IconFormat = (typeof ICON_FORMATS)[number];
 
+
+/** Larger on-screen preview; export still uses the selected export size. */
+const PREVIEW_DISPLAY_SIZE: Record<IconSize, number> = {
+  8: 88,
+  16: 104,
+  32: 120,
+  64: 144,
+  128: 176,
+  256: 208,
+};
+
+export function iconPreviewDisplaySize(exportSize: IconSize): number {
+  return PREVIEW_DISPLAY_SIZE[exportSize];
+}
+
 const COLOR_ATTRS = ["fill", "stroke"] as const;
 
 export function getSvgElement(container: HTMLElement): SVGElement | null {
@@ -30,6 +45,28 @@ function applyResolvedColors(root: Element, color: string) {
   };
 
   visit(root);
+}
+
+
+export function scaleSvgMarkup(svg: string, size: number): string {
+  if (typeof DOMParser === "undefined") {
+    return svg
+      .replace(/width="[^"]*"/, `width="${size}"`)
+      .replace(/height="[^"]*"/, `height="${size}"`);
+  }
+
+  const doc = new DOMParser().parseFromString(svg, "image/svg+xml");
+  const el = doc.documentElement;
+  if (el.tagName !== "svg") return svg;
+
+  el.setAttribute("width", String(size));
+  el.setAttribute("height", String(size));
+
+  if (!el.getAttribute("xmlns")) {
+    el.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  }
+
+  return new XMLSerializer().serializeToString(el);
 }
 
 export function prepareSvgForExport(svg: SVGElement, size: number): string {
@@ -114,6 +151,25 @@ export async function svgElementToBlob(
 
   if (!blob) throw new Error("Failed to encode image");
   return blob;
+}
+
+
+export async function exportFromSvgMarkup(
+  svg: string,
+  size: number,
+  format: IconFormat,
+): Promise<Blob> {
+  const scaled = scaleSvgMarkup(svg, size);
+
+  if (format === "svg") {
+    return new Blob([scaled], { type: "image/svg+xml;charset=utf-8" });
+  }
+
+  const container = document.createElement("div");
+  container.innerHTML = scaled;
+  const el = container.querySelector("svg");
+  if (!el) throw new Error("Invalid SVG markup");
+  return svgElementToBlob(el, size, format);
 }
 
 export function downloadBlob(blob: Blob, filename: string) {

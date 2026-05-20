@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import type { LangKey } from "@/lib/language";
 import type { IconEntry } from "@/lib/icons";
 import { iconDetailPath } from "@/lib/icon-path";
-import { copySvgFromContainer } from "@/lib/icon-svg";
+import { copySvgMarkup } from "@/lib/icon-svg";
 import { t } from "@/lib/i18n";
-import IconPreview from "@/components/IconPreview";
+import SvgPreview from "@/components/SvgPreview";
 
 type Props = {
   icon: IconEntry;
@@ -19,15 +19,13 @@ function libraryLabel(icon: IconEntry) {
 }
 
 export default function IconCard({ icon, lang }: Props) {
-  const previewRef = useRef<HTMLSpanElement>(null);
   const [copied, setCopied] = useState(false);
   const detailUrl = iconDetailPath(lang, icon);
 
   async function handleCopySvg(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    if (!previewRef.current) return;
-    const ok = await copySvgFromContainer(previewRef.current, 24);
+    const ok = await copySvgMarkup(icon.svg, 24);
     if (ok) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
@@ -40,7 +38,7 @@ export default function IconCard({ icon, lang }: Props) {
         href={detailUrl}
         className="flex flex-col items-center gap-2 p-4 pb-2 flex-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
       >
-        <IconPreview ref={previewRef} icon={icon} size={28} className="h-12 w-12" />
+        <SvgPreview svg={icon.svg} size={28} className="h-12 w-12" />
         <div className="w-full min-w-0 text-center">
           <p className="truncate text-xs font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
             {icon.n}

@@ -28,7 +28,6 @@ export type QueryIconsParams = {
   pageSize?: number;
   lib?: string;
   style?: string;
-  /** Exact match for detail page lookup */
   exact?: { lib: string; p: string; n: string };
 };
 
@@ -65,6 +64,16 @@ function buildWhere(params: QueryIconsParams) {
   };
 }
 
+function rowToIcon(row: Record<string, string | number>): IconEntry {
+  return {
+    l: String(row.l),
+    p: String(row.p),
+    n: String(row.n),
+    s: String(row.s),
+    svg: String(row.svg),
+  };
+}
+
 export async function queryIcons(params: QueryIconsParams): Promise<IconsQueryResult> {
   const db = await getDb();
   const pageSize = params.pageSize ?? ICON_PAGE_SIZE;
@@ -82,14 +91,13 @@ export async function queryIcons(params: QueryIconsParams): Promise<IconsQueryRe
   const offset = (safePage - 1) * pageSize;
 
   const selectStmt = db.prepare(
-    `SELECT lib AS l, p, n, s FROM icons WHERE ${where} ORDER BY n, lib, p LIMIT ? OFFSET ?`,
+    `SELECT lib AS l, p, n, s, svg FROM icons WHERE ${where} ORDER BY n, lib, p LIMIT ? OFFSET ?`,
   );
   selectStmt.bind([...values, pageSize, offset]);
 
   const items: IconEntry[] = [];
   while (selectStmt.step()) {
-    const row = selectStmt.getAsObject() as IconEntry;
-    items.push({ l: row.l, p: row.p, n: row.n, s: row.s });
+    items.push(rowToIcon(selectStmt.getAsObject() as Record<string, string | number>));
   }
   selectStmt.free();
 
@@ -101,30 +109,12 @@ export async function findIcon(
   pkg: string,
   name: string,
 ): Promise<IconEntry | undefined> {
-  const { items } = await queryIcons({
-    exact: { lib, p: pkg, n: name },
-    page: 1,
-    pageSize: 1,
-  });
-  return items[0];
-}
-
-export async function getIconStats(): Promise<{ total: number; libraries: number; styles: number }> {
   const db = await getDb();
-  const totalStmt = db.prepare("SELECT COUNT(*) AS c FROM icons");
-  totalStmt.step();
-  const total = (totalStmt.getAsObject() as { c: number }).c;
-  totalStmt.free();
-
-  const libStmt = db.prepare("SELECT COUNT(DISTINCT lib) AS c FROM icons");
-  libStmt.step();
-  const libraries = (libStmt.getAsObject() as { c: number }).c;
-  libStmt.free();
-
-  const styleStmt = db.prepare("SELECT COUNT(DISTINCT s) AS c FROM icons");
-  styleStmt.step();
-  const styles = (styleStmt.getAsObject() as { c: number }).c;
-  styleStmt.free();
-
-  return { total, libraries, styles };
+  const stmt = db.prepare(
+    "SELECT lib AS l, p, n, s, svg FROM icons WHERE lib = ? AND p = ? AND n = ? LIMIT 1",
+  );
+  stmt.bind([lib, pkg, name]);
+  const found = stmt.step() ? rowToIcon(stmt.getAsObject() as Record<string, string | number>) : undefined;
+  stmt.free();
+  return found;
 }

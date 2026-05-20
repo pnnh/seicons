@@ -1,22 +1,11 @@
-import { serializeSvg, getSvgElement } from "@/lib/icon-export";
+import { exportFromSvgMarkup, scaleSvgMarkup, type IconFormat } from "@/lib/icon-export";
 
-export function getSvgMarkupFromContainer(
-  container: HTMLElement,
-  size = 24,
-): string | null {
-  const svg = getSvgElement(container);
-  if (!svg) return null;
-  return serializeSvg(svg, size);
-}
+export { scaleSvgMarkup, exportFromSvgMarkup };
+export type { IconFormat };
 
-export async function copySvgFromContainer(
-  container: HTMLElement,
-  size = 24,
-): Promise<boolean> {
-  const markup = getSvgMarkupFromContainer(container, size);
-  if (!markup) return false;
+export async function copySvgMarkup(svg: string, size = 24): Promise<boolean> {
   try {
-    await navigator.clipboard.writeText(markup);
+    await navigator.clipboard.writeText(scaleSvgMarkup(svg, size));
     return true;
   } catch {
     return false;

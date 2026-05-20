@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import type { LangKey } from "@/lib/language";
 import type { IconEntry } from "@/lib/icons";
 import {
@@ -10,12 +10,11 @@ import {
   type IconSize,
   downloadBlob,
   exportFilename,
-  svgElementToBlob,
-  getSvgElement,
+  iconPreviewDisplaySize,
 } from "@/lib/icon-export";
-import { copySvgFromContainer } from "@/lib/icon-svg";
+import { copySvgMarkup, exportFromSvgMarkup } from "@/lib/icon-svg";
 import { t } from "@/lib/i18n";
-import IconPreview from "@/components/IconPreview";
+import SvgPreview from "@/components/SvgPreview";
 
 type Props = {
   lang: LangKey;
@@ -28,25 +27,27 @@ const optionActive = "border-blue-600 bg-blue-50 text-blue-700";
 const optionIdle = "border-gray-300 bg-white text-gray-700 hover:bg-gray-50";
 
 export default function IconDetailPanel({ lang, icon }: Props) {
-  const previewRef = useRef<HTMLSpanElement>(null);
   const [size, setSize] = useState<IconSize>(64);
   const [format, setFormat] = useState<IconFormat>("svg");
   const [exporting, setExporting] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(false);
 
-  async function handleExport() {
-    if (!previewRef.current) return;
-    const svg = getSvgElement(previewRef.current);
-    if (!svg) {
-      setError(true);
-      return;
-    }
+  const previewSize = iconPreviewDisplaySize(size);
 
+  const importLine = useMemo(
+    () =>
+      icon.l === "mui"
+        ? `import ${icon.n} from "@mui/icons-material/${icon.n}";`
+        : `import { ${icon.n} } from "react-icons/${icon.p}";`,
+    [icon],
+  );
+
+  async function handleExport() {
     setExporting(true);
     setError(false);
     try {
-      const blob = await svgElementToBlob(svg, size, format);
+      const blob = await exportFromSvgMarkup(icon.svg, size, format);
       downloadBlob(blob, exportFilename(icon.n, size, format));
     } catch {
       setError(true);
@@ -56,8 +57,7 @@ export default function IconDetailPanel({ lang, icon }: Props) {
   }
 
   async function handleCopySvg() {
-    if (!previewRef.current) return;
-    const ok = await copySvgFromContainer(previewRef.current, size);
+    const ok = await copySvgMarkup(icon.svg, size);
     if (ok) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
@@ -67,7 +67,7 @@ export default function IconDetailPanel({ lang, icon }: Props) {
   return (
     <div className="flex flex-col items-center gap-10 w-full max-w-lg mx-auto">
       <div className="flex items-center justify-center min-h-[280px] w-full rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 p-12">
-        <IconPreview ref={previewRef} icon={icon} size={size} />
+        <SvgPreview svg={icon.svg} size={previewSize} />
       </div>
 
       <div className="w-full space-y-3">
@@ -127,9 +127,7 @@ export default function IconDetailPanel({ lang, icon }: Props) {
             {t(lang, "exportFailed")}
           </p>
         )}
-        <p className="text-xs text-gray-400 font-mono break-all text-center">
-          {icon.l === "mui" ? `import ${icon.n} from "@mui/icons-material/${icon.n}";` : `import { ${icon.n} } from "react-icons/${icon.p}";`}
-        </p>
+        <p className="text-xs text-gray-400 font-mono break-all text-center">{importLine}</p>
       </div>
     </div>
   );
