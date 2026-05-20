@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { LangKey } from "@/lib/language";
 import type { IconEntry } from "@/lib/icons";
 import {
@@ -14,6 +14,7 @@ import {
 } from "@/lib/icon-export";
 import { copySvgMarkup, exportFromSvgMarkup } from "@/lib/icon-svg";
 import { t } from "@/lib/i18n";
+import { iconImportLine } from "@/lib/icon-import";
 import SvgPreview from "@/components/SvgPreview";
 
 type Props = {
@@ -35,13 +36,7 @@ export default function IconDetailPanel({ lang, icon }: Props) {
 
   const previewSize = iconPreviewDisplaySize(size);
 
-  const importLine = useMemo(
-    () =>
-      icon.l === "mui"
-        ? `import ${icon.n} from "@mui/icons-material/${icon.n}";`
-        : `import { ${icon.n} } from "react-icons/${icon.p}";`,
-    [icon],
-  );
+  const importLine = iconImportLine(icon);
 
   async function handleExport() {
     setExporting(true);

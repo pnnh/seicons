@@ -12,6 +12,14 @@ export const ICON_LIBRARIES = [
   { id: "", key: "libraryAll" },
   { id: "react-icons", key: "libraryReactIcons" },
   { id: "mui", key: "libraryMui" },
+  { id: "heroicons", key: "libraryHeroicons" },
+  { id: "lucide", key: "libraryLucide" },
+  { id: "tabler", key: "libraryTabler" },
+  { id: "phosphor", key: "libraryPhosphor" },
+  { id: "fontawesome", key: "libraryFontAwesome" },
+  { id: "remix", key: "libraryRemix" },
+  { id: "lineicons", key: "libraryLineicons" },
+  { id: "svgmoji", key: "librarySvgmoji" },
 ] as const;
 
 export const ICON_STYLES = [

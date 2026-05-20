@@ -38,5 +38,13 @@
     "styleRounded": "角丸",
     "styleSharp": "シャープ",
     "styleTwoTone": "ツートーン",
-    "loadingIcons": "読み込み中…"
+    "loadingIcons": "読み込み中…",
+    "libraryHeroicons": "Heroicons",
+    "libraryLucide": "Lucide React",
+    "libraryTabler": "Tabler Icons",
+    "libraryPhosphor": "Phosphor Icons",
+    "libraryFontAwesome": "Font Awesome",
+    "libraryRemix": "Remix Icon",
+    "libraryLineicons": "Lineicons",
+    "librarySvgmoji": "svgmoji"
 }

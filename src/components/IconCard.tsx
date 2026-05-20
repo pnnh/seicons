@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { LangKey } from "@/lib/language";
 import type { IconEntry } from "@/lib/icons";
+import { ICON_LIBRARIES } from "@/lib/icons";
 import { iconDetailPath } from "@/lib/icon-path";
 import { copySvgMarkup } from "@/lib/icon-svg";
 import { t } from "@/lib/i18n";
@@ -14,8 +15,10 @@ type Props = {
   lang: LangKey;
 };
 
-function libraryLabel(icon: IconEntry) {
-  return icon.l === "mui" ? "MUI" : icon.p;
+function libraryLabel(icon: IconEntry, lang: LangKey) {
+  if (icon.l === "react-icons") return icon.p;
+  const entry = ICON_LIBRARIES.find((lib) => lib.id === icon.l);
+  return entry ? t(lang, entry.key) : icon.l;
 }
 
 export default function IconCard({ icon, lang }: Props) {
@@ -44,7 +47,7 @@ export default function IconCard({ icon, lang }: Props) {
             {icon.n}
           </p>
           <p className="truncate text-[10px] text-gray-400 uppercase tracking-wide">
-            {libraryLabel(icon)}
+            {libraryLabel(icon, lang)}
           </p>
         </div>
       </Link>

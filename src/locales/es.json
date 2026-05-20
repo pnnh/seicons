@@ -38,5 +38,13 @@
     "styleRounded": "Redondeado",
     "styleSharp": "Sharp",
     "styleTwoTone": "Dos tonos",
-    "loadingIcons": "Cargando iconos…"
+    "loadingIcons": "Cargando iconos…",
+    "libraryHeroicons": "Heroicons",
+    "libraryLucide": "Lucide React",
+    "libraryTabler": "Tabler Icons",
+    "libraryPhosphor": "Phosphor Icons",
+    "libraryFontAwesome": "Font Awesome",
+    "libraryRemix": "Remix Icon",
+    "libraryLineicons": "Lineicons",
+    "librarySvgmoji": "svgmoji"
 }

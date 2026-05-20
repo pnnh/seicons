@@ -1,9 +1,9 @@
 {
     "siteName": "Seicons",
-    "siteTagline": "Browse and export icons from react-icons and Material UI",
-    "siteDescription": "Search 60,000+ icons from react-icons and @mui/icons-material. Filter by library and style, copy SVG, or export PNG, JPG, WEBP.",
+    "siteTagline": "Browse and export icons from 9+ icon libraries",
+    "siteDescription": "Search 90,000+ icons from react-icons, MUI, Heroicons, Lucide, Tabler, Phosphor, Font Awesome, Remix, Lineicons, and more.",
     "homeTitle": "Seicons — react-icons Browser",
-    "homeDescription": "Unified icon browser for react-icons and Material UI Icons with search, filters, SVG copy, and multi-format export.",
+    "homeDescription": "Search 90,000+ icons from react-icons, MUI, Heroicons, Lucide, Tabler, Phosphor, Font Awesome, Remix, Lineicons, and more.",
     "searchPlaceholder": "Search icons by name or pack (e.g. FaHome, md)",
     "searchLabel": "Search icons",
     "iconCount": "{count} icons",
@@ -38,5 +38,13 @@
     "styleRounded": "Rounded",
     "styleSharp": "Sharp",
     "styleTwoTone": "Two-tone",
-    "loadingIcons": "Loading icons…"
+    "loadingIcons": "Loading icons…",
+    "libraryHeroicons": "Heroicons",
+    "libraryLucide": "Lucide React",
+    "libraryTabler": "Tabler Icons",
+    "libraryPhosphor": "Phosphor Icons",
+    "libraryFontAwesome": "Font Awesome",
+    "libraryRemix": "Remix Icon",
+    "libraryLineicons": "Lineicons",
+    "librarySvgmoji": "svgmoji"
 }

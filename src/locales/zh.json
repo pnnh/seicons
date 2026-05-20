@@ -1,9 +1,9 @@
 {
     "siteName": "Seicons",
-    "siteTagline": "浏览与导出 react-icons 和 Material UI 图标",
-    "siteDescription": "搜索 react-icons 与 @mui/icons-material 共 6 万多个图标，按库与风格筛选，复制 SVG 或导出 PNG、JPG、WEBP。",
+    "siteTagline": "浏览并导出 9+ 图标库中的图标",
+    "siteDescription": "统一检索 react-icons、MUI、Heroicons、Lucide、Tabler、Phosphor、Font Awesome、Remix、Lineicons 等 9 万余枚图标。",
     "homeTitle": "Seicons — react-icons 图标浏览器",
-    "homeDescription": "react-icons 与 Material UI 图标统一浏览、筛选、复制与导出。",
+    "homeDescription": "统一检索 react-icons、MUI、Heroicons、Lucide、Tabler、Phosphor、Font Awesome、Remix、Lineicons 等 9 万余枚图标。",
     "searchPlaceholder": "按名称或图标集搜索（如 FaHome、md）",
     "searchLabel": "搜索图标",
     "iconCount": "共 {count} 个图标",
@@ -38,5 +38,13 @@
     "styleRounded": "圆角",
     "styleSharp": "尖角",
     "styleTwoTone": "双色",
-    "loadingIcons": "加载中…"
+    "loadingIcons": "加载中…",
+    "libraryHeroicons": "Heroicons",
+    "libraryLucide": "Lucide React",
+    "libraryTabler": "Tabler Icons",
+    "libraryPhosphor": "Phosphor Icons",
+    "libraryFontAwesome": "Font Awesome React",
+    "libraryRemix": "Remix Icon",
+    "libraryLineicons": "Lineicons",
+    "librarySvgmoji": "svgmoji (Emoji)"
 }

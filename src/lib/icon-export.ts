@@ -48,25 +48,18 @@ function applyResolvedColors(root: Element, color: string) {
 }
 
 
+/** Pure-string SVG resize — same output on server and client (avoids hydration mismatch). */
 export function scaleSvgMarkup(svg: string, size: number): string {
-  if (typeof DOMParser === "undefined") {
-    return svg
-      .replace(/width="[^"]*"/, `width="${size}"`)
-      .replace(/height="[^"]*"/, `height="${size}"`);
-  }
-
-  const doc = new DOMParser().parseFromString(svg, "image/svg+xml");
-  const el = doc.documentElement;
-  if (el.tagName !== "svg") return svg;
-
-  el.setAttribute("width", String(size));
-  el.setAttribute("height", String(size));
-
-  if (!el.getAttribute("xmlns")) {
-    el.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-  }
-
-  return new XMLSerializer().serializeToString(el);
+  const sizeStr = String(size);
+  return svg.replace(/<svg\b([^>]*)>/i, (_, attrs: string) => {
+    let next = attrs
+      .replace(/\swidth="[^"]*"/gi, "")
+      .replace(/\sheight="[^"]*"/gi, "");
+    if (!/\sxmlns=/i.test(next)) {
+      next = ` xmlns="http://www.w3.org/2000/svg"${next}`;
+    }
+    return `<svg${next} width="${sizeStr}" height="${sizeStr}">`;
+  });
 }
 
 export function prepareSvgForExport(svg: SVGElement, size: number): string {
