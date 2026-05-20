@@ -1,31 +1,30 @@
-import manifest from "@/data/icons-manifest.json";
-
-export type IconEntry = { p: string; n: string };
-
-export const ICON_MANIFEST: IconEntry[] = manifest;
+export type IconEntry = {
+  l: string;
+  p: string;
+  n: string;
+  s: string;
+};
 
 export const ICON_PAGE_SIZE = 48;
 
-export const ICON_PACKAGES = [...new Set(ICON_MANIFEST.map((i) => i.p))].sort();
+export const ICON_LIBRARIES = [
+  { id: "", key: "libraryAll" },
+  { id: "react-icons", key: "libraryReactIcons" },
+  { id: "mui", key: "libraryMui" },
+] as const;
 
-export function filterIcons(query: string): IconEntry[] {
-  const q = query.trim().toLowerCase();
-  if (!q) return ICON_MANIFEST;
-  return ICON_MANIFEST.filter((icon) => {
-    const name = icon.n.toLowerCase();
-    const pkg = icon.p.toLowerCase();
-    return name.includes(q) || pkg.includes(q) || `${pkg}/${name}`.includes(q);
-  });
-}
+export const ICON_STYLES = [
+  { id: "", key: "styleAll" },
+  { id: "filled", key: "styleFilled" },
+  { id: "outlined", key: "styleOutlined" },
+  { id: "rounded", key: "styleRounded" },
+  { id: "sharp", key: "styleSharp" },
+  { id: "two-tone", key: "styleTwoTone" },
+] as const;
 
-export function paginateIcons<T>(items: T[], page: number, pageSize: number) {
-  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
-  const safePage = Math.min(Math.max(1, page), totalPages);
-  const start = (safePage - 1) * pageSize;
-  return {
-    items: items.slice(start, start + pageSize),
-    page: safePage,
-    totalPages,
-    total: items.length,
-  };
-}
+export type IconsQueryResult = {
+  items: IconEntry[];
+  page: number;
+  totalPages: number;
+  total: number;
+};

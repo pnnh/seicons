@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { isValidLang } from "@/lib/language";
 import type { LangKey } from "@/lib/language";
-import { findIcon } from "@/lib/icon-path";
+import { findIcon } from "@/lib/icons-db";
 import { t } from "@/lib/i18n";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
@@ -11,30 +11,35 @@ import IconDetailPanel from "@/components/IconDetailPanel";
 
 export const dynamic = "force-dynamic";
 
-type Props = { params: Promise<{ lang: string; pkg: string; name: string }> };
+type Props = { params: Promise<{ lang: string; lib: string; pkg: string; name: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { lang, pkg, name } = await params;
+  const { lang, lib, pkg, name } = await params;
   if (!isValidLang(lang)) return {};
-  const icon = findIcon(decodeURIComponent(pkg), decodeURIComponent(name));
+  const icon = await findIcon(
+    decodeURIComponent(lib),
+    decodeURIComponent(pkg),
+    decodeURIComponent(name),
+  );
   if (!icon) return {};
   const l = lang as LangKey;
   return {
     title: t(l, "iconDetailTitle").replace("{name}", icon.n),
-    description: `${icon.n} (${icon.p}) — ${t(l, "siteTagline")}`,
+    description: `${icon.n} (${icon.l}/${icon.p}) — ${t(l, "siteTagline")}`,
   };
 }
 
 export default async function IconDetailPage({ params }: Props) {
-  const { lang, pkg: rawPkg, name: rawName } = await params;
+  const { lang, lib: rawLib, pkg: rawPkg, name: rawName } = await params;
   if (!isValidLang(lang)) notFound();
   const l = lang as LangKey;
+  const lib = decodeURIComponent(rawLib);
   const pkg = decodeURIComponent(rawPkg);
   const name = decodeURIComponent(rawName);
-  const icon = findIcon(pkg, name);
+  const icon = await findIcon(lib, pkg, name);
   if (!icon) notFound();
 
-  const pathSuffix = `icons/${encodeURIComponent(pkg)}/${encodeURIComponent(name)}`;
+  const pathSuffix = `icons/${encodeURIComponent(lib)}/${encodeURIComponent(pkg)}/${encodeURIComponent(name)}`;
 
   return (
     <>
@@ -48,7 +53,9 @@ export default async function IconDetailPage({ params }: Props) {
         </Link>
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold text-gray-900">{icon.n}</h1>
-          <p className="text-sm text-gray-500 uppercase tracking-wide mt-1">{icon.p}</p>
+          <p className="text-sm text-gray-500 uppercase tracking-wide mt-1">
+            {icon.l} / {icon.p}
+          </p>
         </div>
         <IconDetailPanel lang={l} icon={icon} />
       </main>

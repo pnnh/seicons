@@ -67,7 +67,7 @@ export default function IconDetailPanel({ lang, icon }: Props) {
   return (
     <div className="flex flex-col items-center gap-10 w-full max-w-lg mx-auto">
       <div className="flex items-center justify-center min-h-[280px] w-full rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 p-12">
-        <IconPreview ref={previewRef} pkg={icon.p} name={icon.n} size={size} />
+        <IconPreview ref={previewRef} icon={icon} size={size} />
       </div>
 
       <div className="w-full space-y-3">
@@ -128,7 +128,7 @@ export default function IconDetailPanel({ lang, icon }: Props) {
           </p>
         )}
         <p className="text-xs text-gray-400 font-mono break-all text-center">
-          {`import { ${icon.n} } from "react-icons/${icon.p}";`}
+          {icon.l === "mui" ? `import ${icon.n} from "@mui/icons-material/${icon.n}";` : `import { ${icon.n} } from "react-icons/${icon.p}";`}
         </p>
       </div>
     </div>

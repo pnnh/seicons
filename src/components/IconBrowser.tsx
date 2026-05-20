@@ -1,14 +1,14 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { LangKey } from "@/lib/language";
 import { t } from "@/lib/i18n";
 import {
-  ICON_PAGE_SIZE,
-  ICON_PACKAGES,
-  filterIcons,
-  paginateIcons,
+  ICON_LIBRARIES,
+  ICON_STYLES,
+  type IconEntry,
+  type IconsQueryResult,
 } from "@/lib/icons";
 import IconCard from "@/components/IconCard";
 
@@ -26,6 +26,9 @@ function formatMessage(template: string, vars: Record<string, string | number>) 
 const btnClass =
   "rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 whitespace-nowrap";
 
+const selectClass =
+  "rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-8 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer min-w-[9rem]";
+
 function IconBrowserInner({ lang }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -33,10 +36,14 @@ function IconBrowserInner({ lang }: Props) {
 
   const queryParam = searchParams.get("q") ?? "";
   const pageParam = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
+  const libParam = searchParams.get("lib") ?? "";
+  const styleParam = searchParams.get("style") ?? "";
 
   const [inputValue, setInputValue] = useState(queryParam);
   const [pageInput, setPageInput] = useState(String(pageParam));
   const [pageError, setPageError] = useState(false);
+  const [data, setData] = useState<IconsQueryResult | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setInputValue(queryParam);
@@ -47,40 +54,73 @@ function IconBrowserInner({ lang }: Props) {
     setPageError(false);
   }, [pageParam]);
 
-  const filtered = useMemo(() => filterIcons(queryParam), [queryParam]);
-  const { items, page, totalPages, total } = useMemo(
-    () => paginateIcons(filtered, pageParam, ICON_PAGE_SIZE),
-    [filtered, pageParam],
-  );
-
-  const showJumpButtons = totalPages > PAGE_JUMP_SIZE;
-  const canPrev5 = showJumpButtons && page > PAGE_JUMP_SIZE;
-  const canNext5 = showJumpButtons && page + PAGE_JUMP_SIZE <= totalPages;
-
   const updateParams = useCallback(
-    (nextQuery: string, nextPage: number) => {
+    (next: { q?: string; page?: number; lib?: string; style?: string }) => {
       const params = new URLSearchParams();
-      const q = nextQuery.trim();
+      const q = (next.q ?? queryParam).trim();
+      const lib = next.lib ?? libParam;
+      const style = next.style ?? styleParam;
+      const page = next.page ?? pageParam;
+
       if (q) params.set("q", q);
-      if (nextPage > 1) params.set("page", String(nextPage));
+      if (lib) params.set("lib", lib);
+      if (style) params.set("style", style);
+      if (page > 1) params.set("page", String(page));
+
       const qs = params.toString();
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     },
-    [pathname, router],
+    [pathname, router, queryParam, libParam, styleParam, pageParam],
   );
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
       if (inputValue !== queryParam) {
-        updateParams(inputValue, 1);
+        updateParams({ q: inputValue, page: 1 });
       }
     }, 300);
     return () => window.clearTimeout(timer);
   }, [inputValue, queryParam, updateParams]);
 
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+
+    const params = new URLSearchParams();
+    if (queryParam) params.set("q", queryParam);
+    if (libParam) params.set("lib", libParam);
+    if (styleParam) params.set("style", styleParam);
+    params.set("page", String(pageParam));
+
+    fetch(`/api/icons?${params}`)
+      .then((res) => res.json())
+      .then((json: IconsQueryResult) => {
+        if (!cancelled) setData(json);
+      })
+      .catch(() => {
+        if (!cancelled) setData({ items: [], page: 1, totalPages: 1, total: 0 });
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [queryParam, pageParam, libParam, styleParam]);
+
+  const items: IconEntry[] = data?.items ?? [];
+  const page = data?.page ?? 1;
+  const totalPages = data?.totalPages ?? 1;
+  const total = data?.total ?? 0;
+
+  const showJumpButtons = totalPages > PAGE_JUMP_SIZE;
+  const canPrev5 = showJumpButtons && page > PAGE_JUMP_SIZE;
+  const canNext5 = showJumpButtons && page + PAGE_JUMP_SIZE <= totalPages;
+
   function goToPage(nextPage: number) {
     const clamped = Math.min(Math.max(1, nextPage), totalPages);
-    updateParams(queryParam, clamped);
+    updateParams({ page: clamped });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -99,14 +139,12 @@ function IconBrowserInner({ lang }: Props) {
     }
 
     setPageError(false);
-    if (parsed !== page) {
-      goToPage(parsed);
-    }
+    if (parsed !== page) goToPage(parsed);
   }
 
   return (
     <div className="space-y-8">
-      <div className="max-w-xl mx-auto">
+      <div className="max-w-xl mx-auto space-y-4">
         <label htmlFor="icon-search" className="sr-only">
           {t(lang, "searchLabel")}
         </label>
@@ -133,29 +171,61 @@ function IconBrowserInner({ lang }: Props) {
             <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
           </svg>
         </div>
-        <p className="mt-2 text-center text-sm text-gray-500">
-          {formatMessage(t(lang, "iconCount"), {
-            count: total.toLocaleString(),
-            packages: ICON_PACKAGES.length,
-          })}
+
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <label className="flex flex-col gap-1 text-xs text-gray-500">
+            <span>{t(lang, "filterLibrary")}</span>
+            <select
+              value={libParam}
+              onChange={(e) => updateParams({ lib: e.target.value, page: 1 })}
+              className={selectClass}
+              aria-label={t(lang, "filterLibrary")}
+            >
+              {ICON_LIBRARIES.map((opt) => (
+                <option key={opt.id || "all"} value={opt.id}>
+                  {t(lang, opt.key)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex flex-col gap-1 text-xs text-gray-500">
+            <span>{t(lang, "filterStyle")}</span>
+            <select
+              value={styleParam}
+              onChange={(e) => updateParams({ style: e.target.value, page: 1 })}
+              className={selectClass}
+              aria-label={t(lang, "filterStyle")}
+            >
+              {ICON_STYLES.map((opt) => (
+                <option key={opt.id || "all"} value={opt.id}>
+                  {t(lang, opt.key)}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <p className="text-center text-sm text-gray-500">
+          {loading
+            ? t(lang, "loadingIcons")
+            : formatMessage(t(lang, "iconCount"), { count: total.toLocaleString() })}
         </p>
       </div>
 
-      {items.length === 0 ? (
+      {loading ? (
+        <p className="text-center text-gray-500 py-16">{t(lang, "loadingIcons")}</p>
+      ) : items.length === 0 ? (
         <p className="text-center text-gray-500 py-16">{t(lang, "noResults")}</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
           {items.map((icon) => (
-            <IconCard key={`${icon.p}-${icon.n}`} icon={icon} lang={lang} />
+            <IconCard key={`${icon.l}-${icon.p}-${icon.n}`} icon={icon} lang={lang} />
           ))}
         </div>
       )}
 
-      {totalPages > 1 && (
-        <nav
-          className="flex flex-col items-center gap-2"
-          aria-label="Pagination"
-        >
+      {!loading && totalPages > 1 && (
+        <nav className="flex flex-col items-center gap-2" aria-label="Pagination">
           <div className="flex flex-wrap items-center justify-center gap-2">
             {showJumpButtons && (
               <button

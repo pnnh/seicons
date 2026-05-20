@@ -14,6 +14,10 @@ type Props = {
   lang: LangKey;
 };
 
+function libraryLabel(icon: IconEntry) {
+  return icon.l === "mui" ? "MUI" : icon.p;
+}
+
 export default function IconCard({ icon, lang }: Props) {
   const previewRef = useRef<HTMLSpanElement>(null);
   const [copied, setCopied] = useState(false);
@@ -36,12 +40,14 @@ export default function IconCard({ icon, lang }: Props) {
         href={detailUrl}
         className="flex flex-col items-center gap-2 p-4 pb-2 flex-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
       >
-        <IconPreview ref={previewRef} pkg={icon.p} name={icon.n} size={28} className="h-12 w-12" />
+        <IconPreview ref={previewRef} icon={icon} size={28} className="h-12 w-12" />
         <div className="w-full min-w-0 text-center">
           <p className="truncate text-xs font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
             {icon.n}
           </p>
-          <p className="truncate text-[10px] text-gray-400 uppercase tracking-wide">{icon.p}</p>
+          <p className="truncate text-[10px] text-gray-400 uppercase tracking-wide">
+            {libraryLabel(icon)}
+          </p>
         </div>
       </Link>
       <button
