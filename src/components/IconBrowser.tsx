@@ -1,12 +1,14 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { LangKey } from "@/lib/language";
 import { t } from "@/lib/i18n";
 import {
   ICON_LIBRARIES,
-  ICON_STYLES,
+  getStyleOptionsForLibrary,
+  isStyleValidForLibrary,
+  shouldShowStyleFilter,
   type IconEntry,
   type IconsQueryResult,
 } from "@/lib/icons";
@@ -38,6 +40,13 @@ function IconBrowserInner({ lang, initialData }: Props) {
   const pageParam = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
   const libParam = searchParams.get("lib") ?? "";
   const styleParam = searchParams.get("style") ?? "";
+  const showStyleFilter = shouldShowStyleFilter(libParam);
+  const styleOptions = useMemo(
+    () => getStyleOptionsForLibrary(libParam),
+    [libParam],
+  );
+  const effectiveStyleParam =
+    showStyleFilter && isStyleValidForLibrary(libParam, styleParam) ? styleParam : "";
 
   const [inputValue, setInputValue] = useState(queryParam);
   const [pageInput, setPageInput] = useState(String(pageParam));
@@ -76,6 +85,16 @@ function IconBrowserInner({ lang, initialData }: Props) {
   );
 
   useEffect(() => {
+    if (!libParam && styleParam) {
+      updateParams({ style: "", page: pageParam });
+      return;
+    }
+    if (libParam && styleParam && !isStyleValidForLibrary(libParam, styleParam)) {
+      updateParams({ style: "", page: 1 });
+    }
+  }, [libParam, styleParam, pageParam, updateParams]);
+
+  useEffect(() => {
     const timer = window.setTimeout(() => {
       if (inputValue !== queryParam) {
         updateParams({ q: inputValue, page: 1 });
@@ -95,7 +114,7 @@ function IconBrowserInner({ lang, initialData }: Props) {
     const params = new URLSearchParams();
     if (queryParam) params.set("q", queryParam);
     if (libParam) params.set("lib", libParam);
-    if (styleParam) params.set("style", styleParam);
+    if (effectiveStyleParam) params.set("style", effectiveStyleParam);
     params.set("page", String(pageParam));
 
     fetch(`/api/icons?${params}`)
@@ -111,7 +130,7 @@ function IconBrowserInner({ lang, initialData }: Props) {
       .finally(() => {
         if (fetchSeq.current === seq) setLoading(false);
       });
-  }, [queryParam, pageParam, libParam, styleParam]);
+  }, [queryParam, pageParam, libParam, effectiveStyleParam]);
 
   const items: IconEntry[] = data?.items ?? [];
   const page = data?.page ?? 1;
@@ -181,7 +200,7 @@ function IconBrowserInner({ lang, initialData }: Props) {
             <span>{t(lang, "filterLibrary")}</span>
             <select
               value={libParam}
-              onChange={(e) => updateParams({ lib: e.target.value, page: 1 })}
+              onChange={(e) => updateParams({ lib: e.target.value, style: "", page: 1 })}
               className={selectClass}
               aria-label={t(lang, "filterLibrary")}
             >
@@ -192,21 +211,23 @@ function IconBrowserInner({ lang, initialData }: Props) {
               ))}
             </select>
           </label>
-          <label className="flex flex-col gap-1 text-xs text-gray-500">
-            <span>{t(lang, "filterStyle")}</span>
-            <select
-              value={styleParam}
-              onChange={(e) => updateParams({ style: e.target.value, page: 1 })}
-              className={selectClass}
-              aria-label={t(lang, "filterStyle")}
-            >
-              {ICON_STYLES.map((opt) => (
-                <option key={opt.id || "all"} value={opt.id}>
-                  {t(lang, opt.key)}
-                </option>
-              ))}
-            </select>
-          </label>
+          {showStyleFilter && (
+            <label className="flex flex-col gap-1 text-xs text-gray-500">
+              <span>{t(lang, "filterStyle")}</span>
+              <select
+                value={effectiveStyleParam}
+                onChange={(e) => updateParams({ style: e.target.value, page: 1 })}
+                className={selectClass}
+                aria-label={t(lang, "filterStyle")}
+              >
+                {styleOptions.map((opt) => (
+                  <option key={opt.id || "all"} value={opt.id}>
+                    {t(lang, opt.key)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
         </div>
 
         <p className="text-center text-sm text-gray-500">
