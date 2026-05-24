@@ -1,0 +1,22 @@
+src/components/IconBrowser.tsx
+  s_488027ba2a8161::t_22f5731548f6c8 3,9-11,43-49,117,133,203,214-230
+  s_488027ba2a8161::t_4da94b4b74f8dd 87-95
+src/lib/icons.ts
+  s_488027ba2a8161::t_22f5731548f6c8 25-38,48-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "33340d3174573b414b22a2b364467b0d7874892c",
+  "prompts": {},
+  "sessions": {
+    "s_488027ba2a8161": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "3653a4eb-df04-4edf-9bb4-8d44a0b8e92d",
+        "model": "composer-2.5"
+      },
+      "human_author": "larry <xspanni@gmail.com>"
+    }
+  }
+}
