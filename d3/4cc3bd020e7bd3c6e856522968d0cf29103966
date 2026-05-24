@@ -1,0 +1,30 @@
+wrangler.jsonc
+  h_de2c1989c48e7b 16-23
+src/lib/icons-db.ts
+  h_de2c1989c48e7b 1,14-19,52-124,128,141-142,171,176,187-203
+scripts/generate-icons-db.mjs
+  h_de2c1989c48e7b 694-727
+next.config.ts
+  h_de2c1989c48e7b 2-6
+src/cloudflare-env.d.ts
+  h_de2c1989c48e7b 1-8,10-16,18-22,24-32
+scripts/export-d1-sql.mjs
+  h_de2c1989c48e7b 1-95
+scripts/seed-d1-large.mjs
+  h_de2c1989c48e7b 1-158
+package.json
+  h_de2c1989c48e7b 13-19
+.gitignore
+  h_de2c1989c48e7b 45-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "d34cc3bd020e7bd3c6e856522968d0cf29103966",
+  "prompts": {},
+  "humans": {
+    "h_de2c1989c48e7b": {
+      "author": "xspanni <xspanni@gmail.com>"
+    }
+  }
+}
