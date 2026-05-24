@@ -687,11 +687,44 @@ async function main() {
 
   fs.mkdirSync(path.dirname(outDb), { recursive: true });
   fs.writeFileSync(outDb, Buffer.from(db.export()));
-  db.close();
 
   const sizeMb = (fs.statSync(outDb).size / 1024 / 1024).toFixed(2);
   console.log(`Wrote ${ok} icons to ${outDb} (${sizeMb} MB)`);
   if (failed) console.log(`  skipped ${failed} icons (render failed)`);
+
+  // ── Generate SQL dump for Cloudflare D1 import ────────────────────────────
+  console.log("Generating SQL dump for D1 import…");
+  const sqlFile = path.join(root, "src/data/icons.sql");
+  const sqlLines = [];
+  sqlLines.push("DROP TABLE IF EXISTS icons;");
+  sqlLines.push(
+    "CREATE TABLE icons (" +
+      "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+      "lib TEXT NOT NULL, " +
+      "p TEXT NOT NULL, " +
+      "n TEXT NOT NULL, " +
+      "s TEXT NOT NULL, " +
+      "svg TEXT NOT NULL" +
+      ");",
+  );
+  sqlLines.push("CREATE INDEX idx_icons_lib ON icons(lib);");
+  sqlLines.push("CREATE INDEX idx_icons_style ON icons(s);");
+  sqlLines.push("CREATE INDEX idx_icons_name ON icons(n);");
+  sqlLines.push("CREATE INDEX idx_icons_pack ON icons(p);");
+
+  const esc = (s) => `'${String(s).replace(/'/g, "''")}'`;
+  const allRows = db.exec("SELECT lib, p, n, s, svg FROM icons ORDER BY rowid");
+  const rows = allRows[0]?.values ?? [];
+  // One row per INSERT to stay within D1's per-statement size limit (SQLITE_TOOBIG)
+  for (const row of rows) {
+    sqlLines.push(`INSERT INTO icons (lib,p,n,s,svg) VALUES (${row.map(esc).join(",")});`);
+  }
+
+  fs.writeFileSync(sqlFile, sqlLines.join("\n") + "\n");
+  const sqlSizeMb = (fs.statSync(sqlFile).size / 1024 / 1024).toFixed(2);
+  console.log(`Wrote SQL dump to ${sqlFile} (${sqlSizeMb} MB)`);
+
+  db.close();
 }
 
 main().catch((err) => {
