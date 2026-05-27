@@ -1,0 +1,16 @@
+src/lib/icons-db.ts
+  h_de2c1989c48e7b 54-59,63-90
+next.config.ts
+  h_de2c1989c48e7b 9-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "774651fe1f129586a26a189503da56eea3067393",
+  "prompts": {},
+  "humans": {
+    "h_de2c1989c48e7b": {
+      "author": "xspanni <xspanni@gmail.com>"
+    }
+  }
+}
