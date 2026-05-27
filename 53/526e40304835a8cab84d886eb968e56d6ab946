@@ -1,0 +1,50 @@
+package.json
+  h_de2c1989c48e7b 10,16-18
+scripts/generate-icons-db.mjs
+  h_de2c1989c48e7b 13,640,643-652,665,688,705,719,728,731
+scripts/export-d1-sql.mjs
+  h_de2c1989c48e7b 32,48,60
+src/lib/icons.ts
+  h_de2c1989c48e7b 6
+src/components/IconDetailPanel.tsx
+  h_de2c1989c48e7b 3,15,35-43,50,54,64-65,75-89,91
+src/app/layout.tsx
+  h_de2c1989c48e7b 1-4
+scripts/upload-icons-r2.mjs
+  h_de2c1989c48e7b 1-144,146-158,161-178,181-193
+src/lib/icons-db.ts
+  h_de2c1989c48e7b 5-9,120,123,125-129,140,143-145,171-173,175-177,179,200,220
+src/app/not-found.tsx
+  h_de2c1989c48e7b 1-10
+src/app/global-error.tsx
+  h_de2c1989c48e7b 1-18
+src/components/IconCard.tsx
+  h_de2c1989c48e7b 31-32,45
+src/components/SvgPreview.tsx
+  s_6706de79dd3c89::t_245a7da22d13c5 4,9,12,14-24
+next.config.ts
+  h_de2c1989c48e7b 4-13
+.gitignore
+  s_6706de79dd3c89::t_21d8c5f2347e6a 47-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "53526e40304835a8cab84d886eb968e56d6ab946",
+  "prompts": {},
+  "humans": {
+    "h_de2c1989c48e7b": {
+      "author": "xspanni <xspanni@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_6706de79dd3c89": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "35467267-f319-43aa-9897-bb2c7e4331bd",
+        "model": "gpt-4.1"
+      },
+      "human_author": "xspanni <xspanni@gmail.com>"
+    }
+  }
+}
