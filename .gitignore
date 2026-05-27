@@ -44,6 +44,9 @@ next-env.d.ts
 src/data/icons.db
 src/data/icons.sql
 
+# generated SVG files (dev cache, served from R2 in production)
+/public/icons/
+
 .codebase-memory/
 .codebase/
 

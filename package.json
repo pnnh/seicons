@@ -7,16 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "adapter": "next build && opennextjs-cloudflare build",
+    "adapter": "ENABLE_CLOUDFLARE_BINDINGS=true next build && opennextjs-cloudflare build && rm -rf .open-next/assets/icons",
     "preview": "opennextjs-cloudflare preview",
     "generate:icons": "node scripts/generate-icons-db.mjs",
     "prebuild": "pnpm run generate:icons",
     "d1:create": "wrangler d1 create seicons",
     "generate:sql": "node scripts/export-d1-sql.mjs",
-    "d1:seed": "wrangler d1 execute seicons --remote --file=./src/data/icons.sql",
-    "d1:seed:large": "node scripts/seed-d1-large.mjs",
-    "d1:seed:all": "pnpm d1:seed && pnpm d1:seed:large",
-    "d1:seed:local": "wrangler d1 execute seicons --local --file=./src/data/icons.sql"
+    "d1:seed:remote": "wrangler d1 execute seicons --remote --file=./src/data/icons.sql",
+    "d1:seed:local": "wrangler d1 execute seicons --local --file=./src/data/icons.sql",
+    "upload:r2": "node scripts/upload-icons-r2.mjs"
   },
   "devDependencies": {
     "@emotion/react": "^11.14.0",

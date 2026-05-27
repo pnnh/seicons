@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { LangKey } from "@/lib/language";
 import type { IconEntry } from "@/lib/icons";
 import {
@@ -12,10 +12,9 @@ import {
   exportFilename,
   iconPreviewDisplaySize,
 } from "@/lib/icon-export";
-import { copySvgMarkup, exportFromSvgMarkup } from "@/lib/icon-svg";
+import { copySvgMarkup, exportFromSvgMarkup, scaleSvgMarkup } from "@/lib/icon-svg";
 import { t } from "@/lib/i18n";
 import { iconImportLine } from "@/lib/icon-import";
-import SvgPreview from "@/components/SvgPreview";
 
 type Props = {
   lang: LangKey;
@@ -33,16 +32,26 @@ export default function IconDetailPanel({ lang, icon }: Props) {
   const [exporting, setExporting] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(false);
+  const [svgMarkup, setSvgMarkup] = useState<string | null>(null);
+
+  useEffect(() => {
+    setSvgMarkup(null);
+    fetch(icon.svgUrl)
+      .then((r) => r.text())
+      .then(setSvgMarkup)
+      .catch(() => setSvgMarkup(null));
+  }, [icon.svgUrl]);
 
   const previewSize = iconPreviewDisplaySize(size);
 
   const importLine = iconImportLine(icon);
 
   async function handleExport() {
+    if (!svgMarkup) return;
     setExporting(true);
     setError(false);
     try {
-      const blob = await exportFromSvgMarkup(icon.svg, size, format);
+      const blob = await exportFromSvgMarkup(svgMarkup, size, format);
       downloadBlob(blob, exportFilename(icon.n, size, format));
     } catch {
       setError(true);
@@ -52,7 +61,8 @@ export default function IconDetailPanel({ lang, icon }: Props) {
   }
 
   async function handleCopySvg() {
-    const ok = await copySvgMarkup(icon.svg, size);
+    if (!svgMarkup) return;
+    const ok = await copySvgMarkup(svgMarkup, size);
     if (ok) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
@@ -62,7 +72,23 @@ export default function IconDetailPanel({ lang, icon }: Props) {
   return (
     <div className="flex flex-col items-center gap-10 w-full max-w-lg mx-auto">
       <div className="flex items-center justify-center min-h-[280px] w-full rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 p-12">
-        <SvgPreview svg={icon.svg} size={previewSize} />
+        {svgMarkup ? (
+          <span
+            className="inline-flex items-center justify-center text-gray-900 [&_svg]:block"
+            style={{ width: previewSize, height: previewSize }}
+            dangerouslySetInnerHTML={{ __html: scaleSvgMarkup(svgMarkup, previewSize) }}
+            aria-hidden
+          />
+        ) : (
+          <img
+            src={icon.svgUrl}
+            width={previewSize}
+            height={previewSize}
+            alt=""
+            aria-hidden
+            className="block"
+          />
+        )}
       </div>
 
       <div className="w-full space-y-3">

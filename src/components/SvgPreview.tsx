@@ -1,23 +1,26 @@
 "use client";
 
-import { useMemo } from "react";
-import { scaleSvgMarkup } from "@/lib/icon-svg";
-
 type Props = {
-  svg: string;
+  svgUrl: string;
   size: number;
   className?: string;
 };
 
-export default function SvgPreview({ svg, size, className }: Props) {
-  const markup = useMemo(() => scaleSvgMarkup(svg, size), [svg, size]);
-
+export default function SvgPreview({ svgUrl, size, className }: Props) {
   return (
     <span
-      className={`inline-flex items-center justify-center text-gray-900 [&_svg]:block ${className ?? ""}`}
+      className={`inline-flex items-center justify-center ${className ?? ""}`}
       style={{ width: size, height: size }}
-      dangerouslySetInnerHTML={{ __html: markup }}
-      aria-hidden
-    />
+    >
+      <img
+        src={svgUrl}
+        width={size}
+        height={size}
+        alt=""
+        aria-hidden
+        className="block"
+        style={{ width: size, height: size }}
+      />
+    </span>
   );
 }

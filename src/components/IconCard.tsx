@@ -28,7 +28,8 @@ export default function IconCard({ icon, lang }: Props) {
   async function handleCopySvg(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    const ok = await copySvgMarkup(icon.svg, 24);
+    const svgText = await fetch(icon.svgUrl).then((r) => r.text());
+    const ok = await copySvgMarkup(svgText, 24);
     if (ok) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
@@ -41,7 +42,7 @@ export default function IconCard({ icon, lang }: Props) {
         href={detailUrl}
         className="flex flex-col items-center gap-2 p-4 pb-2 flex-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
       >
-        <SvgPreview svg={icon.svg} size={28} className="h-12 w-12" />
+        <SvgPreview svgUrl={icon.svgUrl} size={28} className="h-12 w-12" />
         <div className="w-full min-w-0 text-center">
           <p className="truncate text-xs font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
             {icon.n}

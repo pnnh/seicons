@@ -10,6 +10,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 const require = createRequire(import.meta.url);
 const outDb = path.join(root, "src/data/icons.db");
+const outIconsDir = path.join(root, "public/icons");
 const muiLoadersDir = path.join(root, "src/lib/mui-loaders");
 
 const LIB_REACT_ICONS = "react-icons";
@@ -627,8 +628,7 @@ async function main() {
       lib TEXT NOT NULL,
       p TEXT NOT NULL,
       n TEXT NOT NULL,
-      s TEXT NOT NULL,
-      svg TEXT NOT NULL
+      s TEXT NOT NULL
     );
     CREATE INDEX idx_icons_lib ON icons(lib);
     CREATE INDEX idx_icons_style ON icons(s);
@@ -637,8 +637,18 @@ async function main() {
   `);
 
   const insert = db.prepare(
-    "INSERT INTO icons (lib, p, n, s, svg) VALUES (?, ?, ?, ?, ?)",
+    "INSERT INTO icons (lib, p, n, s) VALUES (?, ?, ?, ?)",
   );
+
+  const createdIconDirs = new Set();
+  function writeIconSvgFile(lib, p, n, svg) {
+    const dir = path.join(outIconsDir, lib, p);
+    if (!createdIconDirs.has(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+      createdIconDirs.add(dir);
+    }
+    fs.writeFileSync(path.join(dir, `${n}.svg`), svg, "utf8");
+  }
 
   let ok = 0;
   let failed = 0;
@@ -652,7 +662,8 @@ async function main() {
       failed++;
       continue;
     }
-    insert.run([lib, p, n, s, svg]);
+    writeIconSvgFile(lib, p, n, svg);
+    insert.run([lib, p, n, s]);
     ok++;
     if ((i + 1) % 1000 === 0) {
       console.log(`  static ${i + 1}/${staticMeta.length} (${ok} ok, ${failed} skipped)`);
@@ -674,7 +685,8 @@ async function main() {
       failed++;
       continue;
     }
-    insert.run([meta.lib, meta.p, meta.n, meta.s, svg]);
+    writeIconSvgFile(meta.lib, meta.p, meta.n, svg);
+    insert.run([meta.lib, meta.p, meta.n, meta.s]);
     ok++;
     if ((i + 1) % 2000 === 0 || i + 1 === emojiMeta.length) {
       console.log(`  svgmoji ${i + 1}/${emojiMeta.length} (${ok} ok, ${failed} skipped)`);
@@ -690,6 +702,7 @@ async function main() {
 
   const sizeMb = (fs.statSync(outDb).size / 1024 / 1024).toFixed(2);
   console.log(`Wrote ${ok} icons to ${outDb} (${sizeMb} MB)`);
+  console.log(`Wrote ${ok} SVG files to ${outIconsDir}`);
   if (failed) console.log(`  skipped ${failed} icons (render failed)`);
 
   // ── Generate SQL dump for Cloudflare D1 import ────────────────────────────
@@ -699,13 +712,12 @@ async function main() {
   sqlLines.push("DROP TABLE IF EXISTS icons;");
   sqlLines.push(
     "CREATE TABLE icons (" +
-      "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-      "lib TEXT NOT NULL, " +
-      "p TEXT NOT NULL, " +
-      "n TEXT NOT NULL, " +
-      "s TEXT NOT NULL, " +
-      "svg TEXT NOT NULL" +
-      ");",
+    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+    "lib TEXT NOT NULL, " +
+    "p TEXT NOT NULL, " +
+    "n TEXT NOT NULL, " +
+    "s TEXT NOT NULL" +
+    ");",
   );
   sqlLines.push("CREATE INDEX idx_icons_lib ON icons(lib);");
   sqlLines.push("CREATE INDEX idx_icons_style ON icons(s);");
@@ -713,11 +725,10 @@ async function main() {
   sqlLines.push("CREATE INDEX idx_icons_pack ON icons(p);");
 
   const esc = (s) => `'${String(s).replace(/'/g, "''")}'`;
-  const allRows = db.exec("SELECT lib, p, n, s, svg FROM icons ORDER BY rowid");
+  const allRows = db.exec("SELECT lib, p, n, s FROM icons ORDER BY rowid");
   const rows = allRows[0]?.values ?? [];
-  // One row per INSERT to stay within D1's per-statement size limit (SQLITE_TOOBIG)
   for (const row of rows) {
-    sqlLines.push(`INSERT INTO icons (lib,p,n,s,svg) VALUES (${row.map(esc).join(",")});`);
+    sqlLines.push(`INSERT INTO icons (lib,p,n,s) VALUES (${row.map(esc).join(",")});`);
   }
 
   fs.writeFileSync(sqlFile, sqlLines.join("\n") + "\n");

@@ -2,6 +2,11 @@ import type { Database } from "sql.js";
 import type { IconEntry, IconsQueryResult } from "@/lib/icons";
 import { ICON_PAGE_SIZE } from "@/lib/icons";
 
+function makeSvgUrl(l: string, p: string, n: string): string {
+  const base = process.env.NEXT_PUBLIC_SVG_BASE_URL ?? "";
+  return `${base}/icons/${l}/${p}/${n}.svg`;
+}
+
 export type QueryIconsParams = {
   q?: string;
   page?: number;
@@ -112,12 +117,16 @@ async function queryIconsD1(
 
   const rows = await db
     .prepare(
-      `SELECT lib AS l, p, n, s, svg FROM icons WHERE ${where} ORDER BY n, lib, p LIMIT ? OFFSET ?`,
+      `SELECT lib AS l, p, n, s FROM icons WHERE ${where} ORDER BY n, lib, p LIMIT ? OFFSET ?`,
     )
     .bind(...values, pageSize, offset)
-    .all<IconEntry>();
+    .all<Omit<IconEntry, "svgUrl">>();
 
-  return { items: rows.results, page: safePage, totalPages, total };
+  const items = rows.results.map((row) => ({
+    ...row,
+    svgUrl: makeSvgUrl(row.l, row.p, row.n),
+  }));
+  return { items, page: safePage, totalPages, total };
 }
 
 async function findIconD1(
@@ -128,11 +137,12 @@ async function findIconD1(
 ): Promise<IconEntry | undefined> {
   const row = await db
     .prepare(
-      "SELECT lib AS l, p, n, s, svg FROM icons WHERE lib = ? AND p = ? AND n = ? LIMIT 1",
+      "SELECT lib AS l, p, n, s FROM icons WHERE lib = ? AND p = ? AND n = ? LIMIT 1",
     )
     .bind(lib, pkg, name)
-    .first<IconEntry>();
-  return row ?? undefined;
+    .first<Omit<IconEntry, "svgUrl">>();
+  if (!row) return undefined;
+  return { ...row, svgUrl: makeSvgUrl(row.l, row.p, row.n) };
 }
 
 // ── sql.js fallback (local dev without D1) ────────────────────────────────
@@ -158,12 +168,15 @@ async function getSqlJsDb(): Promise<Database> {
 }
 
 function rowToIcon(row: Record<string, string | number>): IconEntry {
+  const l = String(row.l);
+  const p = String(row.p);
+  const n = String(row.n);
   return {
-    l: String(row.l),
-    p: String(row.p),
-    n: String(row.n),
+    l,
+    p,
+    n,
     s: String(row.s),
-    svg: String(row.svg),
+    svgUrl: makeSvgUrl(l, p, n),
   };
 }
 
@@ -184,7 +197,7 @@ async function queryIconsSqlJs(params: QueryIconsParams): Promise<IconsQueryResu
   const offset = (safePage - 1) * pageSize;
 
   const selectStmt = db.prepare(
-    `SELECT lib AS l, p, n, s, svg FROM icons WHERE ${where} ORDER BY n, lib, p LIMIT ? OFFSET ?`,
+    `SELECT lib AS l, p, n, s FROM icons WHERE ${where} ORDER BY n, lib, p LIMIT ? OFFSET ?`,
   );
   selectStmt.bind([...values, pageSize, offset]);
 
@@ -204,7 +217,7 @@ async function findIconSqlJs(
 ): Promise<IconEntry | undefined> {
   const db = await getSqlJsDb();
   const stmt = db.prepare(
-    "SELECT lib AS l, p, n, s, svg FROM icons WHERE lib = ? AND p = ? AND n = ? LIMIT 1",
+    "SELECT lib AS l, p, n, s FROM icons WHERE lib = ? AND p = ? AND n = ? LIMIT 1",
   );
   stmt.bind([lib, pkg, name]);
   const found = stmt.step()
