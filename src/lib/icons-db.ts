@@ -50,15 +50,44 @@ function buildWhere(params: QueryIconsParams): {
 }
 
 // ── Cloudflare D1 ─────────────────────────────────────────────────────────
-
 async function getD1(): Promise<D1Database | null> {
+  // 环境变量强制开关（最高优先级，方便调试）
+  if (process.env.NODE_ENV !== 'production') {
+    console.log("[getD1] 🚫 D1 explicitly disabled in non-production environment");
+    return null;
+  }
+
   try {
     const { getCloudflareContext } = await import("@opennextjs/cloudflare");
     const ctx = await getCloudflareContext({ async: true });
-    // CloudflareEnv is augmented in src/cloudflare-env.d.ts to include DB
-    const db = (ctx.env as CloudflareEnv & { DB?: D1Database }).DB;
-    return db ?? null;
-  } catch {
+    const env = ctx.env as any;
+    const db = env?.DB;
+
+    if (!db || typeof db !== 'object' || typeof db.prepare !== 'function') {
+      console.log("[getD1] ⚠️ No valid DB binding found");
+      return null;
+    }
+
+    // 额外检测：尝试一个无害的元数据查询来判断是否真正可用
+    try {
+      // 这是一个轻量操作，用于检测 D1 是否真正初始化
+      await db.prepare("SELECT 1").first();
+      console.log("[getD1] ✅ D1 binding is fully functional");
+      return db as D1Database;
+    } catch (testError: any) {
+      // 如果是 "no such table" 或类似初始化错误，说明是未完全初始化的 ProxyStub
+      if (testError.message?.includes('no such table') || 
+          testError.message?.includes('SQLITE_ERROR')) {
+        
+        console.log("[getD1] ⚠️ D1 ProxyStub exists but database not initialized → fallback to local SQLite");
+        return null;
+      }
+      
+      // 其他错误则透传
+      throw testError;
+    }
+  } catch (error: any) {
+    console.log("[getD1] ℹ️ Not in Cloudflare environment (normal for npm run dev) → using local SQLite");
     return null;
   }
 }
