@@ -71,6 +71,18 @@ pnpm dev                  # http://localhost:7611
 
 响应 `items[]` 含字段：`l`（库）、`p`（包）、`n`（名）、`s`（风格）、`svg`（24px 基准 SVG 字符串）。
 
+## 部署
+
+当前工具设计为部署到cloudflare worker，同时使用cloudflare d1作为数据库，r2作为图标文件存储。
+
+部署前先运行pnpm run generate:icons生成图标数据库和文件，文件将会存储在./public/icons目录下，数据库存储在./src/data目录下。这两个目录都已经添加到.gitignore中，确保不会被提交到版本控制。
+
+生成本地图标数据库后再执行pnpm run generate:sql将数据库导出为SQL文件，最后执行pnpm run d1:seed:remote将SQL文件中的数据导入到Cloudflare D1数据库中。
+
+然后手动安装并调用rclone将./public/icons目录下的图标文件上传到Cloudflare R2存储桶中。
+
+在发布后，需要配置相关环境变量保证配置正确，参考`.env.example`文件。
+
 ## 扩展新图标库
 
 1. 在 `scripts/generate-icons-db.mjs` 增加扫描与 `renderXxxIconSvg()`
