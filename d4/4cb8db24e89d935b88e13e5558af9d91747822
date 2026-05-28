@@ -1,0 +1,36 @@
+package.json
+  s_0c080ce152fbc9::t_9eed4902ad7698 14
+.vscode/settings.json
+  s_6706de79dd3c89::t_3a1bfb408c5197 1-2,4-5
+README.md
+  h_de2c1989c48e7b 74-85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "d44cb8db24e89d935b88e13e5558af9d91747822",
+  "prompts": {},
+  "humans": {
+    "h_de2c1989c48e7b": {
+      "author": "xspanni <xspanni@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_0c080ce152fbc9": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "35202224-bcd1-4c61-91d7-178892e35a73",
+        "model": "gpt-4.1"
+      },
+      "human_author": "xspanni <xspanni@gmail.com>"
+    },
+    "s_6706de79dd3c89": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "35467267-f319-43aa-9897-bb2c7e4331bd",
+        "model": "gpt-4.1"
+      },
+      "human_author": "xspanni <xspanni@gmail.com>"
+    }
+  }
+}
